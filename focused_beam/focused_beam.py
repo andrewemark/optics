@@ -2,11 +2,9 @@ import numpy as np
 from scipy.integrate import quad
 from scipy.special import jv
 
-import matplotlib.pyplot as plt
-
 # Computes the optical fields near the focus of a lens for a
-# gaussian beam. It is based on the general formulations set forth in 
-# Novotny and Hecht's Principles of Nano-Optics - Chapter 3.
+# gaussian beam input. It is based on the general formulations 
+# set forth in Novotny and Hecht's Principles of Nano-Optics - Chapter 3. 
 
 def cart2pol(x, y):
     """ 
@@ -34,8 +32,7 @@ def complex_int(func, a, b, **kwargs):
 # The following integrands are those defined Novotny and Hecht, S3.6
 
 def f_w(t, w0, t_max, f):
-    """ 
-    Apodization function 
+    """ Apodization function 
     """
     f0 = w0/(f*np.sin(t_max))
     return np.exp(-1*(np.sin(t)/((f0*np.sin(t_max))))**2)
@@ -79,7 +76,6 @@ def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0):
             I00[i,j] = complex_int(I00_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
             I01[i,j] = complex_int(I01_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
             I02[i,j] = complex_int(I02_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
-
             Ex[i,j] = E_const * (I00[i,j]+I02[i,j]*np.cos(2*phi))
             Ey[i,j] = E_const * (I02[i,j]*np.sin(2*phi))
             Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi))
@@ -111,70 +107,3 @@ def compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0):
             Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi[i,j]))
 
     return (Ex, Ey, Ez, xx, yy)
-
-def main():
-    
-    # Common parameters
-    wl = 800e-9 # Wavelength in m
-    NA = 1.4 # lens numerical aperture
-    n = 1.518 # refractive index of the media
-    f = 500e-6 # focal length in m
-
-    w0 = 500e-6 # Beam waist at back aperture of the lens (just overfills objective)
-
-    t_max = np.arcsin(NA/n) # theta_max in radians
-    k = 2.0*np.pi*n/wl # wavenumber in the medium
-    
-    E0 = 1 
-    
-    # Y, Z plane fields, Phi = pi/2
-
-    y = np.linspace(-2*wl, 2*wl, 150)
-    z = np.linspace(-2*wl, 2*wl, 150)
-    (Ex, Ey, Ez, yy, zz) = compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0)
-    
-    Ex_msq = np.abs(Ex)**2
-    Ey_msq = np.abs(Ey)**2
-    Ez_msq = np.abs(Ez)**2
-    E_msq = Ex_msq + Ey_msq + Ez_msq
-    
-    ywl = yy/wl; zwl = zz/wl; # coordinates normalized by wavelength
-    plt.pcolormesh(ywl, zwl, E_msq)
-    plt.colorbar()
-    plt.title('|E|^2')
-
-    # X, Y plane at focus
-    
-    x = np.linspace(-2*wl, 2*wl, 150)
-    y = np.linspace(-2*wl, 2*wl, 150)
-    (Ex, Ey, Ez, xx, yy) = compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0)
-
-    Ex_msq = np.abs(Ex)**2
-    Ey_msq = np.abs(Ey)**2
-    Ez_msq = np.abs(Ez)**2
-    E_msq = Ex_msq + Ey_msq + Ez_msq
-
-    xwl = xx/wl; ywl = yy/wl; # coordinates normalized by wavelength
-    plt.figure(2)
-    plt.subplot(221)
-    plt.pcolormesh(xwl, ywl, Ex_msq)
-    plt.colorbar()
-    plt.title('|Ex|^2')
-    plt.subplot(222)
-    plt.pcolormesh(xwl, ywl, Ey_msq)
-    plt.colorbar()
-    plt.title('|Ey|^2')
-    plt.subplot(223)
-    plt.pcolormesh(xwl, ywl, Ez_msq)
-    plt.colorbar()
-    plt.title('|Ez|^2')
-    plt.subplot(224)
-    plt.title('|Ez|^2')
-    plt.pcolormesh(xwl, ywl, E_msq)
-    plt.colorbar()
-    plt.title('|E|^2')
-    plt.show()
-
-
-if __name__ == "__main__":
-    main()
