@@ -9,7 +9,7 @@ def main():
     n = 1.518 # refractive index of the media
     f = 500e-6 # focal length in m
 
-    w0 = 500e-6 # Beam waist at back aperture of the lens (just overfills objective)
+    w0 = 500e-6 # Beam waist at back aperture of the lens (overfills objective)
 
     t_max = np.arcsin(NA/n) # theta_max in radians
     k = 2.0*np.pi*n/wl # wavenumber in the medium
@@ -32,13 +32,17 @@ def main():
     #plt.title('|E|^2')
 
     # X, Y plane at focus
-    x = np.linspace(-2*wl, 2*wl, 15)
-    y = np.linspace(-2*wl, 2*wl, 15)
-    (Ex, Ey, Ez, xx, yy) = compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0)
+    x = np.linspace(-2*wl, 2*wl, 60)
+    y = np.linspace(-2*wl, 2*wl, 60)
 
-    Ex_msq = np.abs(Ex)**2
-    Ey_msq = np.abs(Ey)**2
-    Ez_msq = np.abs(Ez)**2
+    # Circularly polarized beam: Superposed x polarized and y polarized beams 
+    # with a 90 degree phase shift. 
+    (Ex1, Ey1, Ez1, xx, yy) = compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0, pol='y')
+    (Ex2, Ey2, Ez2, xx, yy) = compute_XY_fields_TEM00(x, y, t_max, k, 1j*E0, f, n, w0, pol='x')
+
+    Ex_msq = np.abs(Ex1+Ex2)**2
+    Ey_msq = np.abs(Ey1+Ey2)**2
+    Ez_msq = np.abs(Ez1+Ez2)**2
     E_msq = Ex_msq + Ey_msq + Ez_msq
 
     xwl = xx/wl; ywl = yy/wl; # coordinates normalized by wavelength

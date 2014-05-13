@@ -52,10 +52,13 @@ def I02_integrand(t, f_w, t_max, k, rho, z, w0, f):
 
 # Compute the fields near focus in various planes
 
-def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0):
+def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0, pol='x'):
     """
     Returns: matricies of the field components, Ex, Ey, Ez, in the Y, Z plane
-    and coordinate mesh
+    and coordinate mesh. 
+
+    Optional polarization keyword specifies the linear
+    polarization orientation incident on the lens
     """
     
     phi = np.pi/2.0
@@ -75,14 +78,20 @@ def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0):
         for j in range(0, np.size(zz,1)):
             I00[i,j] = complex_int(I00_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
             I01[i,j] = complex_int(I01_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
-            I02[i,j] = complex_int(I02_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f))
-            Ex[i,j] = E_const * (I00[i,j]+I02[i,j]*np.cos(2*phi))
-            Ey[i,j] = E_const * (I02[i,j]*np.sin(2*phi))
-            Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi))
+            I02[i,j] = complex_int(I02_integrand, 0, t_max, args=(f_w, t_max, k, abs(yy[i,j]), zz[i,j], w0, f)) 
+            if pol == 'x':
+                Ex[i,j] = E_const * (I00[i,j]+I02[i,j]*np.cos(2*phi))
+                Ey[i,j] = E_const * (I02[i,j]*np.sin(2*phi))
+                Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi))
+            if pol == 'y':
+                Ex[i,j] = E_const * (I02[i,j]*np.sin(2*phi))
+                Ey[i,j] = E_const * (I00[i,j]-I02[i,j]*np.cos(2*phi))
+                Ez[i,j] = E_const * (-2j*I01[i,j]*np.sin(phi))
+
 
     return (Ex, Ey, Ez, yy, zz)
 
-def compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0):
+def compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0, pol='x'):
 
     # TODO: Allow evaluation in arbitrary z planes! Forced to z = 0 right now.
     xx, yy = np.meshgrid(x, y)
@@ -102,8 +111,12 @@ def compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0):
             I00[i,j] = complex_int(I00_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], 0, w0, f))
             I01[i,j] = complex_int(I01_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], 0, w0, f))
             I02[i,j] = complex_int(I02_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], 0, w0, f))
-            Ex[i,j] = E_const * (I00[i,j]+I02[i,j]*np.cos(2*phi[i,j]))
-            Ey[i,j] = E_const * (I02[i,j]*np.sin(2*phi[i,j]))
-            Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi[i,j]))
-
+            if pol == 'x':
+                Ex[i,j] = E_const * (I00[i,j]+I02[i,j]*np.cos(2*phi[i,j]))
+                Ey[i,j] = E_const * (I02[i,j]*np.sin(2*phi[i,j]))
+                Ez[i,j] = E_const * (-2j*I01[i,j]*np.cos(phi[i,j]))
+            if pol == 'y':
+                Ex[i,j] = E_const * (I02[i,j]*np.sin(2*phi[i,j]))
+                Ey[i,j] = E_const * (I00[i,j]-I02[i,j]*np.cos(2*phi[i,j]))
+                Ez[i,j] = E_const * (-2j*I01[i,j]*np.sin(phi[i,j]))
     return (Ex, Ey, Ez, xx, yy)
