@@ -40,54 +40,59 @@ def f_w(t, w0, t_max, f):
 
 def I00_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5)*np.sin(t)*(1+np.cos(t))*jv(0,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5)*np.sin(t)*(1+np.cos(t)) * \
+        jv(0,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def I01_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5)*(np.sin(t))**2*jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5)*(np.sin(t))**2* \
+        jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def I02_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5)*np.sin(t)*(1-np.cos(t))*jv(2,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5)*np.sin(t)*(1-np.cos(t)) * \
+        jv(2,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def I10_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5)*(np.sin(t))**3*jv(0, k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5)*(np.sin(t))**3 * \
+        jv(0, k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def Irad_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(3.0/2.0)*(np.sin(t))**2*jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(3.0/2.0)*(np.sin(t))**2 * \
+        jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def Iazm_integrand(t, f_w, t_max, k, rho, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5)*(np.sin(t))**2*jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5)*(np.sin(t))**2 * \
+        jv(1,k*rho*np.sin(t))*np.exp(1j*k*z*np.cos(t))
 
 def Ivortex1_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5) * \
-    (jv(1,k*rho*np.sin(t))*(1+np.cos(t))*np.exp(1j*phi) + \
-     jv(3,k*rho*np.sin(t))*(1-np.cos(t))*np.exp(3j*phi)) * \
-    np.exp(1j*k*z*np.cos(t)) * np.sin(t)
+        (np.cos(t))**(0.5) * \
+        (jv(1,k*rho*np.sin(t))*(1+np.cos(t))*np.exp(1j*phi) + \
+        jv(3,k*rho*np.sin(t))*(1-np.cos(t))*np.exp(3j*phi)) * \
+        np.exp(1j*k*z*np.cos(t)) * np.sin(t)
 
 def Ivortex2_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5) * \
-    (jv(1,k*rho*np.sin(t))*(1+np.cos(t))*np.exp(1j*phi) - \
-     jv(3,k*rho*np.sin(t))*(1-np.cos(t))*np.exp(3j*phi)) * \
-    np.exp(1j*k*z*np.cos(t)) * np.sin(t)
+        (np.cos(t))**(0.5) * \
+        (jv(1,k*rho*np.sin(t))*(1+np.cos(t))*np.exp(1j*phi) - \
+        jv(3,k*rho*np.sin(t))*(1-np.cos(t))*np.exp(3j*phi)) * \
+        np.exp(1j*k*z*np.cos(t)) * np.sin(t)
 
 def Ivortex3_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
     return f_w(t, w0, t_max, f) * \
-    (np.cos(t))**(0.5) * \
-    jv(2,k*rho*np.sin(t)) * np.exp(2j*phi) * (np.sin(t))**2 * \
-    np.exp(1j*k*z*np.cos(t))
+        (np.cos(t))**(0.5) * \
+        jv(2,k*rho*np.sin(t)) * np.exp(2j*phi) * (np.sin(t))**2 * \
+        np.exp(1j*k*z*np.cos(t))
 
 # Compute the fields near focus in various planes
-
 def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0, pol='x'):
     """
-    Returns: matricies of the field components, Ex, Ey, Ez, in the Y, Z plane
-    and coordinate mesh. 
+    Returns: matricies of the field components, Ex, Ey, Ez, in the Y, Z 
+    plane and coordinate mesh. 
 
     Optional polarization keyword specifies the linear
     polarization orientation incident on the lens
