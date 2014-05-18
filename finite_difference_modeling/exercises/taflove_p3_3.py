@@ -30,7 +30,7 @@ FWHM = 20.0 # desired FWHM for gaussian pulse
 sigma = FWHM/2.3548
 F = np.exp(-(F-30)**2/(2*sigma**2))
 
-# Yee's finite difference calculation for 
+# Yee's finite difference calculation
 for i in range(120):
     Ez_Nm12 = np.copy(Ez_Np12)
     Hy_N = np.copy(Hy_Np1)     
