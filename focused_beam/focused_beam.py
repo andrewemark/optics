@@ -88,6 +88,21 @@ def Ivortex3_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
         jv(2,k*rho*np.sin(t)) * np.exp(2j*phi) * (np.sin(t))**2 * \
         np.exp(1j*k*z*np.cos(t))
 
+def Iv1_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
+    return f_w(t, w0, t_max, f) * \
+        (np.cos(t))**(0.5) * np.sin(t) * (1 + np.cos(t)) * \
+        jv(1, k*rho*np.sin(t)) * np.exp(1j*k*z*np.cos(t))
+
+def Iv2_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
+    return f_w(t, w0, t_max, f) * \
+        (np.cos(t))**(0.5) * np.sin(t) * (1 - np.cos(t)) * \
+        jv(3, k*rho*np.sin(t)) * np.exp(1j*k*z*np.cos(t))
+
+def Iv3_integrand(t, f_w, t_max, k, rho, phi, z, w0, f):
+    return f_w(t, w0, t_max, f) * \
+        (np.cos(t))**(0.5) * (np.sin(t))**2 * \
+        jv(3, k*rho*np.sin(t)) * np.exp(1j*k*z*np.cos(t))
+
 # Compute the fields near focus in various planes
 def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0, pol='x'):
     """
@@ -336,10 +351,10 @@ def compute_XY_vortex_beam(x, y, t_max, k, E0, f, n, w0):
     
     for i in range(0,np.size(xx,0)):
         for j in range(0, np.size(yy,1)):
-            Ivortex1[i,j] = complex_int(Ivortex1_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
-            Ivortex2[i,j] = complex_int(Ivortex2_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
-            Ivortex3[i,j] = complex_int(Ivortex3_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
-            Ex[i,j] = Ivortex1[i,j]
-            Ey[i,j] = 1j * Ivortex2[i,j] 
-            Ez[i,j] = -2j * Ivortex3[i,j]
+            Ivortex1[i,j] = complex_int(Iv1_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
+            Ivortex2[i,j] = complex_int(Iv2_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
+            Ivortex3[i,j] = complex_int(Iv3_integrand, 0, t_max, args=(f_w, t_max, k, rho[i,j], phi[i,j], 0, w0, f))
+            Ex[i,j] = Ivortex1[i,j]*np.exp(1j*phi[i,j]) + Ivortex2[i,j]*np.exp(3j*phi[i,j])
+            Ey[i,j] = 1j * (Ivortex1[i,j]*np.exp(1j*phi[i,j]) - Ivortex2[i,j]*np.exp(3j*phi[i,j]))
+            Ez[i,j] = -2j * Ivortex3[i,j] * np.exp(2j*phi[i,j])
     return (Ex, Ey, Ez, xx, yy)
