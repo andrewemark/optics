@@ -124,6 +124,10 @@ def compute_YZ_fields_TEM00(y, z, t_max, k, E0, f, n, w0, pol='x'):
                 Ex[i,j] = E_const * (I02[i,j]*np.sin(2*phi))
                 Ey[i,j] = E_const * (I00[i,j]-I02[i,j]*np.cos(2*phi))
                 Ez[i,j] = E_const * (-2j*I01[i,j]*np.sin(phi))
+            if pol == 'circ':
+                Ex[i,j] = (I00[i,j]+I02[i,j]*np.exp(-2j*phi))
+                Ey[i,j] = (1j*(I00[i,j]-I02[i,j]*np.exp(2j*phi)))
+                Ez[i,j] = (-2j*I01[i,j]*np.exp(1j*phi))
     return (Ex, Ey, Ez, yy, zz)
 
 
@@ -155,6 +159,10 @@ def compute_XY_fields_TEM00(x, y, t_max, k, E0, f, n, w0, pol='x'):
                 Ex[i,j] = E_const * (I02[i,j] * np.sin(2*phi[i,j]))
                 Ey[i,j] = E_const * (I00[i,j] - I02[i,j] * np.cos(2*phi[i,j]))
                 Ez[i,j] = E_const * (-2j * I01[i,j] * np.sin(phi[i,j]))
+            if pol == 'circ':
+                Ex[i,j] = (I00[i,j]+I02[i,j]*np.exp(-2j*phi[i,j]))
+                Ey[i,j] = (1j*(I00[i,j]-I02[i,j]*np.exp(2j*phi[i,j])))
+                Ez[i,j] = (-2j*I01[i,j]*np.exp(1j*phi[i,j]))
     return (Ex, Ey, Ez, xx, yy)
 
 
